@@ -1,0 +1,98 @@
+.center-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo-soli{
+    display: flex;
+    flex-direction: column;
+}
+
+.info-funcionario{
+    display: flex;
+    flex-direction: row;
+}
+
+.bt-envio{
+    background-color: green;
+    color: white;
+    border-radius: 1;
+    font-size: 15;
+}
+
+.bt-envio:hover{
+    background-color: #0101b5;
+    box-shadow: 0 0 0 4px #0101b5;
+    color: white;
+}
+
+.bt-cancelar{
+    border-radius: 5;
+    background-color: #ff3131;
+    font-size: 15;
+    color: white;
+}
+
+.bt-cancelar:hover{
+    background-color: red;
+    box-shadow: 0 0 0 4px red;
+    color: white;
+}
+
+.logo-compressed{
+    display: none;
+}
+
+.soli{
+    padding: 35px;
+}
+
+.modalidad-pago{
+    display: flex;
+    flex-direction: row;
+}
+
+.div-table{
+    width: 100%;
+}
+
+.div-end{
+    width: 100%;
+}
+
+@media screen and (max-width: 1060px) {
+    .modalidad-pago{
+        flex-direction: column;
+    }
+    .logo-soli{
+        display: none;
+    }
+    .info-funcionario{
+        display: flex;
+        flex-direction: column;
+    }
+    .soli{
+        padding: 20px;
+    }
+    .logo-compressed{
+        padding-top: 10px;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+    .center-container{
+        width: 90%;
+    }
+    .div-botons{
+        width: 100%;
+    }
+    .div-table{
+        max-width: 100px;
+        width: 100vw;
+    }
+    .div-end{
+        flex-direction: column;
+    }
+}

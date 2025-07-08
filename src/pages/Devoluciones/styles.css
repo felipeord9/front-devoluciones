@@ -1,0 +1,11 @@
+.div-botons{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .div-botons{
+        flex-direction: column;
+    }
+}
