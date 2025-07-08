@@ -87,6 +87,7 @@ export default function ModalUsers({
       rowId: "",
       name: "",
       email: "",
+      username: '',
       password: "",
       role: "",
     })
@@ -115,8 +116,12 @@ export default function ModalUsers({
                   <option selected disabled value="">
                     -- Seleccione un rol --
                   </option>
-                  <option value="vendedor">Vendedor</option>
-                  <option value="agencia">Agencia</option>
+                  <option value="solicitante">Solicitante</option>
+                  <option value="logistica">Logistica</option>
+                  <option value="supervisor">Supervisor</option>
+                  <option value="Autorizador clientes">Autorizador clientes</option>
+                  <option value="Autorizador agencias">Autorizador agencias</option>
+                  <option value="admin">Administrador</option>
                 </select>
               </div>
               <div>
