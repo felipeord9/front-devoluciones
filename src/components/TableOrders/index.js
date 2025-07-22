@@ -92,12 +92,13 @@ function TableOrders({ orders, getAllOrders, loading }) {
             >
               <FaEdit />
             </button>
-          ):((user.role === 'logistica') ?
+          ):((user.role === 'logistica' && (row.state === 'Autorizado')) ?
             (
             <button 
               title="Recogido" className='btn btn-sm'
               style={{background:'#FF5757', color:'white'}}
               onClick={(e) => (setSelectedReturn(row), openModal(e))}
+              disabled = {row.state !== 'Autorizado'}
             >
               <GrDeliver />
             </button>

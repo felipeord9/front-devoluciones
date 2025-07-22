@@ -276,6 +276,40 @@ export default function Form() {
   };
 
   /* Logica para tomar la foto de evidencia */
+  //se agrega toda esta parte
+  const camaraRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [stream, setStream] = useState(null);
+  const [error, setError] = useState(null);
+  const startCamera = async () => {
+    try {
+      const backStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } },
+        audio: false,
+      });
+      setStream(backStream);
+      if (camaraRef.current) {
+        camaraRef.current.srcObject = backStream;
+      }
+    } catch (err) {
+      alert("❌ Cámara trasera no disponible. Probando cámara frontal...");
+      try {
+        const frontStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false,
+        });
+        setStream(frontStream);
+        if (camaraRef.current) {
+          camaraRef.current.srcObject = frontStream;
+        }
+      } catch (fallbackErr) {
+        console.error("❌ No se pudo acceder a ninguna cámara:", fallbackErr);
+        setError("No se encontró ninguna cámara en el dispositivo.");
+      }
+    }
+  };
+  //
+  
   // Abrir el modal para un campo específico
   const openModal = (e) => {
     setShowModal(true);
@@ -284,13 +318,45 @@ export default function Form() {
   // Cerrar el modal
   const closeModal = (e) => {
     setShowModal(false);
+    
+    /* Se agrega esta parte */
+    // 🔴 Detener la cámara después de capturar la imagen
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    if (camaraRef.current) {
+      camaraRef.current.srcObject = null;
+    }
+    /*  */
     /* setPreviewPhoto(null); */ // Resetear previsualización
   };
   // Capturar la foto y guardarla en el estado correspondiente
   const capturePhoto = () => {
+    const video = camaraRef.current;
+    const canvas = canvasRef.current;
+
+    if (video && canvas && canvas.getContext) {
+      const context = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+      setPreviewPhoto(dataUrl);
+
+      // 🔴 Detener la cámara después de capturar la imagen
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        setStream(null);
+      }
+    }
+  };
+  /* Version anterior 
+    const capturePhoto = () => {
     const photo = webcamRef.current.getScreenshot();
     setPreviewPhoto(photo); // Mostrar previsualización
-  };
+  }; */
+
   //descartar foto en el modal
   const discardPhoto = () => {
     setPreviewPhoto(null); // Mostrar previsualización
@@ -582,18 +648,27 @@ export default function Form() {
               <Modal.Title>Capturar evidencia:</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+              {/* <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={{
+                  width: 1280,
+                  height: 720,
+                  facingMode: "enviroment", // 'user' para camara delante O 'enviroment' para la cámara trasera
+                }}
+                style={{ width: '100%', height: '100%', border: '2px solid #ccc', borderRadius: '10px' }}
+              /> */}
               {(!previewPhoto && typeEvidence === 'Foto') ? (
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  videoConstraints={{
-                    width: 1280,
-                    height: 720,
-                    facingMode: "enviroment", // 'user' para camara delante O 'enviroment' para la cámara trasera
-                  }}
-                  style={{ width: '100%', height: '100%', border: '2px solid #ccc', borderRadius: '10px' }}
-                />
+                <div>
+                  <video
+                    ref={camaraRef}
+                    autoPlay
+                    playsInline
+                    style={{ width: '100%', height: '100%', border: '2px solid #ccc', borderRadius: '10px' }}
+                  />                
+                  <canvas ref={canvasRef} style={{ display: "none" }} />
+                </div>
               ):( typeEvidence === 'Foto' &&
                 <img
                   src={previewPhoto}
@@ -634,7 +709,7 @@ export default function Form() {
               {typeEvidence === null &&
                 <div className="d-flex gap-2">
                   <button
-                    onClick={(e)=>(setTypeEvidence('Foto'))}
+                    onClick={(e)=>(setTypeEvidence('Foto'), startCamera(e))}
                     style={{
                       padding: "10px 20px",
                       fontSize: "16px",
