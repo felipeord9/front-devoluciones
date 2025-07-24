@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import './styles.css';
 import { config } from "../../config";
 import { verificarArchivo } from "../../services/evidence";
+import { FaFileDownload } from "react-icons/fa";
 
 const styleStatus = {
   "Solicitado": "primary",
@@ -460,7 +461,36 @@ export default function Autorizaciones (){
         </div>
         <div className="d-flex mb-3 mt-3 row row-cols-sm-2">
             <div className="d-flex flex-column">
-                <label className="fw-bold">EVIDENCIA</label>
+              <div className="info-funcionario w-100">
+                <div className={`div-50 `}>
+                  <label className="fw-bold">EVIDENCIA</label>
+                </div>
+                <div className="div-50-2 d-flex flex-row">
+                  {(foto) ?
+                    <a 
+                      className="" 
+                      style={{fontSize:12}} 
+                      href={foto} 
+                      download={`id_${search.id}.jpg`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaFileDownload />Descargar evidencia
+                    </a>
+                    : (video) &&
+                    <a 
+                      className="" 
+                      style={{fontSize:12}} 
+                      href={video} 
+                      download={`id_${search.id}.webm`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaFileDownload />Descargar evidencia
+                    </a>
+                  }
+                </div>
+              </div>
                 {(!foto && !video) ? (
                     <div
                         style={{
@@ -488,7 +518,6 @@ export default function Autorizaciones (){
                       </div>
                     ) : (
                     <>
-                    video
                       <video
                         src={video}
                         controls
