@@ -143,7 +143,7 @@ export default function Form() {
               state: 'Solicitado',
               observations: search.observations,
               /* evidence: previewPhoto, */
-              destiny: invoiceType ? 'auditoriacontable@granlangostino.net' : 'cordinador@granlangostin.com',
+              destiny: invoiceType ? 'auditoriacontable@granlangostino.net' : 'cordinadoragencias@granlangostino.com',
               /* destiny:'sistemas2@granlangostino.net', */
               typeApplicant: invoiceType ? 'Agencia' : 'Cliente'
               //file: JSON.stringify(files),
