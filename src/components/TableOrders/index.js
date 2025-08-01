@@ -203,7 +203,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
       id: "row_co_id",
       name: "Sucursal",
       selector: (row) => `${row.branchDescription !== null ? row.branchDescription : ''}`,
-      width: "240px",
+      width: "300px",
     },
     {
       id: "created_at",
