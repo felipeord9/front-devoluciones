@@ -200,6 +200,12 @@ function TableOrders({ orders, getAllOrders, loading }) {
       width: "240px",
     },
     {
+      id: "row_co_id",
+      name: "Sucursal",
+      selector: (row) => `${row.branchDescription !== null ? row.branchDescription : ''}`,
+      width: "240px",
+    },
+    {
       id: "created_at",
       name: "Fecha Creación",
       selector: (row) => new Date(row.createdAt).toLocaleString("es-CO"),
