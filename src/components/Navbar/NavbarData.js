@@ -8,14 +8,14 @@ export const NavBarData = [
     path: "/form",
     icon: <CgFileAdd />,
     cName: "nav-text",
-    access: ['admin', 'vendedor', 'agencia']
+    access: ['admin', 'solicitante']
   },
   {
-    title: "Mis Devoluciones",
+    title: "Tabla Devoluciones",
     path: "/inicio",
     icon: <MdIcons.MdOutlineInventory />,
     cName: "nav-text",
-    access: ['admin', 'vendedor', 'agencia']
+    access: ['admin', 'solicitante', 'logistica','supervisor','Autorizador clientes','Autorizador agencias']
   },
   {
     title: "Usuarios",
