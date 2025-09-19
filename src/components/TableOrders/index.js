@@ -14,11 +14,13 @@ import { FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "./styles.css";
 import { sendMailCollect, sendMailEnd } from "../../services/mailService";
+import { GiCancel } from "react-icons/gi";
 
 const styleStatus = {
   "Solicitado": "primary",
   'Autorizado': "warning",
   "Recogido": "info",
+  "Cancelado": "secondary",
   "Finalizado": "success",
   'Rechazado': "danger",
 };
@@ -94,14 +96,25 @@ function TableOrders({ orders, getAllOrders, loading }) {
             </button>
           ):((user.role === 'logistica' && (row.state === 'Autorizado')) ?
             (
-            <button 
-              title="Recogido" className='btn btn-sm'
-              style={{background:'#FF5757', color:'white'}}
-              onClick={(e) => (setSelectedReturn(row), openModal(e))}
-              disabled = {row.state !== 'Autorizado'}
-            >
-              <GrDeliver />
-            </button>
+              <div className="d-flex flex-row gap-2">
+                <button 
+                  title="Recogido" className='btn btn-sm'
+                  style={{background:'#FF5757', color:'white'}}
+                  onClick={(e) => (setSelectedReturn(row), openModal(e))}
+                  disabled = {row.state !== 'Autorizado'}
+                >
+                  <GrDeliver />
+                </button>
+                <button 
+                  id={row.id}
+                  title="Cancelar" className='btn btn-sm btn-secondary'
+                  /* style={{background:'#FF5757', color:'white'}} */
+                  onClick={(e) => (handleCancel(e, row))}
+                  disabled = {row.state !== 'Autorizado'}
+                >
+                  <GiCancel  />
+                </button>
+              </div>
             ) : ((user.role === 'supervisor' && row.state === 'Recogido') &&
               <button 
                 title="Finalizar" className='btn btn-sm btn-success'
@@ -114,12 +127,14 @@ function TableOrders({ orders, getAllOrders, loading }) {
           }
         </div>
       ),
-      width: '60px'
+      width: user.role === 'logistica' ? '80px' : '60px'
     },
     {
       id: "state",
       name: "Estado",
       center: true,
+      sortable: true,
+      selector: row => row.state, // 👈 esto define con qué valor ordenar
       cell: (row, index, column, id) => (
         <select
           id={row.id}
@@ -135,6 +150,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
           <option className="text-primary">Solicitado</option>
           <option className="text-warning">Autorizado</option>
           <option className="text-info">Recogido</option>
+          <option className="text-secondary">Cancelado</option>
           <option id="reasonForRejection" className="text-danger">Rechazado</option>
           <option id="reasonForDelivery" className="text-success">Finalizado</option>
         </select>
@@ -146,52 +162,82 @@ function TableOrders({ orders, getAllOrders, loading }) {
       center: true,
       cell: (row, index, column, id) => (
         <>
-          <button
-            className="btn btn-sm btn-primary"
-            disabled={row.state !== 'Rechazado'}
-            onClick={(e) =>
-              Swal.fire({
-                title: "Notas Rechazo",
-                confirmButtonText: "Aceptar",
-                confirmButtonColor:'#FF5757',
-                html: row.reasonForRejection
-                  ? row.reasonForRejection
-                      .split("\n")
-                      .map((elem) => `<p style="font-size: 15px; margin: 0;">${elem}</p>`)
-                      .join("")
-                  : "Sin Información",
-              })
-            }
-          >
-            Rechazo
-          </button>
-          <button
-            className="btn btn-sm btn-primary"
-            disabled={row.state !== 'Finalizado'}
-            onClick={(e) =>
-              Swal.fire({
-                title: "Notas Finalizado",
-                confirmButtonText: "Aceptar",
-                confirmButtonColor:'#FF5757',
-                html: row.associatedDocument
-                  ? row.endDate
-                      .split("\n")
-                      .map((elem) => `<p style="font-size: 15px; margin: 0; " classname="m-0"><strong>Fecha de finalizado:</strong> ${new Date(elem).toLocaleString('es-CO')}</p>`)
-                      .join("") +
-                    row?.associatedDocument
-                      .split("\n")
-                      .map((elem) => `<p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Documento asociado:</strong> ${elem}</p>`)
-                      .join("")
-                  : "Sin Información",
-              })
-            }
-          >
-            Finalizado
-          </button>
+          {row.state === 'Cancelado' ? 
+            <button
+              className="btn btn-sm btn-primary"
+              disabled={row.state !== 'Cancelado'}
+              onClick={(e) =>
+                Swal.fire({
+                  title: "Motivo cancelación",
+                  confirmButtonText: "Aceptar",
+                  confirmButtonColor:'#FF5757',
+                  html: row.cancelReason
+                    ? row.cancelReason
+                        .split("\n")
+                        .map((elem) => `<p style="font-size: 15px; margin: 0;">${elem}</p>`)
+                        .join("")
+                    : "Sin Información",
+                })
+              }
+            >
+              Cancelado
+            </button>
+            :
+            <>
+              <button
+                className="btn btn-sm btn-primary"
+                disabled={row.state !== 'Rechazado'}
+                onClick={(e) =>
+                  Swal.fire({
+                    title: "Notas Rechazo",
+                    confirmButtonText: "Aceptar",
+                    confirmButtonColor:'#FF5757',
+                    html: row.reasonForRejection
+                      ? row.reasonForRejection
+                          .split("\n")
+                          .map((elem) => `<p style="font-size: 15px; margin: 0;">${elem}</p>`)
+                          .join("")
+                      : "Sin Información",
+                  })
+                }
+              >
+                Rechazo
+              </button>
+              <button
+                className="btn btn-sm btn-primary"
+                disabled={row.state !== 'Finalizado'}
+                onClick={(e) =>
+                  Swal.fire({
+                    title: "Notas Finalizado",
+                    confirmButtonText: "Aceptar",
+                    confirmButtonColor:'#FF5757',
+                    html: row.associatedDocument
+                      ? row.endDate
+                          .split("\n")
+                          .map((elem) => `<p style="font-size: 15px; margin: 0; " classname="m-0"><strong>Fecha de finalizado:</strong> ${new Date(elem).toLocaleString('es-CO')}</p>`)
+                          .join("") +
+                        row?.associatedDocument
+                          .split("\n")
+                          .map((elem) => `<p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Documento asociado:</strong> ${elem}</p>`)
+                          .join("")
+                      : "Sin Información",
+                  })
+                }
+              >
+                Finalizado
+              </button>
+            </>
+          }
         </>
       ),
       width: "210px",
       style: { gap: 5 },
+    },
+    {
+      id: "id",
+      name: "id",
+      selector: (row) => `${row.id}`,
+      width: "50px",
     },
     {
       id: "row_co_id",
@@ -448,6 +494,41 @@ function TableOrders({ orders, getAllOrders, loading }) {
         setDocAsociado(soloNumeros);
       }
     }
+  };
+
+  const handleCancel = (e, order) => {
+    const { value } = e.target;
+    Swal.fire({
+      input: "textarea",
+      inputLabel: "Motivo",
+      inputPlaceholder:
+        "Ingrese aquí la razón del cambio de estado de la solicitud...",
+      inputAttributes: {
+        "aria-label": "Ingrese la nota acá.",
+      },
+      inputValidator: (value) => {
+        if (!value) {
+          return "¡En necesario escribir algo!";
+        }
+      },
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+      confirmButtonColor: "#dc3545",
+      cancelButtonText: "Cancelar",
+    }).then(({ isConfirmed, value: input }) => {
+      if (isConfirmed && input) {
+        const body = {
+          state: 'Cancelado',
+          cancelReason: input,
+          cancelDate: new Date(),
+        }
+        return updateDevolucon(order.id, body)
+        .then((data) => {
+          console.log(data);
+          getAllOrders();
+        });
+      }
+    });
   };
 
   return (
