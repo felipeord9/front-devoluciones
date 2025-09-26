@@ -218,11 +218,10 @@ function TableOrders({ orders, getAllOrders, loading }) {
                           .join("") +
                         row?.associatedDocument
                           .split("\n")
-                          .map((elem) => `<p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Documento asociado:</strong> ${elem}</p>`)
-                          .join("") +
-                        row?.supervisorComments
-                          .split("\n")
-                          .map((elem) => `<p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Comentarios:</strong> ${elem}</p>`)
+                          .map((elem) => `
+                            <p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Documento asociado:</strong> ${elem}</p>
+                            <p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Comentarios:</strong> ${(row.supervisorComments !== '' && row.supervisorComments !== null) ? row.supervisorComments : 'No hay comentarios' }</p>
+                          `)
                           .join("")
                       : "Sin Información",
                   })
