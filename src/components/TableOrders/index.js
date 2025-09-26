@@ -437,6 +437,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
     const body = {
       state: 'Finalizado',
       associatedDocument: `${prefix}${docAsociado}`,
+      supervisorComments: supervisorComments,
       endDate: new Date(),
     }
     updateDevolucon(selectedReturn.id, body)
@@ -481,6 +482,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
   }
 
   /* poner inicio de documento predeterminado en el input para finalizar */
+  const [supervisorComments, setSupervisorComments] = useState('');
   const prefix = selectedReturn !== null ? (selectedReturn.coId !== null ?  "TRE - " : "NCN - ") : null;
   const handleChange = (e) => {
     const value = e.target.value;
@@ -642,6 +644,17 @@ function TableOrders({ orders, getAllOrders, loading }) {
               value={prefix + docAsociado}
               onChange={(e) => handleChange(e)}
             />
+          </div>
+          <div className="d-flex flex-column mt-2">
+            <label className="">Comentarios</label>
+            <textarea
+              id="supervisorComments"
+              className="form-control"
+              value={supervisorComments}
+              placeholder="Aquí puedes agregar"
+              onChange={(e)=>setSupervisorComments(e.target.value)}
+              style={{ minHeight: 70, maxHeight: 100, fontSize: 12 }}
+            ></textarea>
           </div>
           </Form.Group>
         </Modal.Body>
