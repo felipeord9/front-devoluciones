@@ -220,7 +220,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
                           .split("\n")
                           .map((elem) => `
                             <p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Documento asociado:</strong> ${elem}</p>
-                            <p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Comentarios:</strong> ${(row.supervisorComments !== '' && row.supervisorComments !== null) ? row.supervisorComments : 'No hay comentarios' }</p>
+                            <p style="font-size: 15px; margin: 0;" classname="m-0"><strong>Comentarios:</strong> ${(row.supervisorComments === '' || row.supervisorComments === null) ? 'No hay comentarios' : row.supervisorComments }</p>
                           `)
                           .join("")
                       : "Sin Información",
