@@ -651,7 +651,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
               id="supervisorComments"
               className="form-control"
               value={supervisorComments}
-              placeholder="Aquí puedes agregar"
+              placeholder="Aquí puedes agregar tus comentarios"
               onChange={(e)=>setSupervisorComments(e.target.value)}
               style={{ minHeight: 70, maxHeight: 100, fontSize: 12 }}
             ></textarea>
