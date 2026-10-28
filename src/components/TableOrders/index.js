@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFViewer, PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import { updateDevolucon } from "../../services/devolucionesService";
 import { Modal , Button , Form } from "react-bootstrap";
 import AuthContext from "../../context/authContext";
@@ -12,9 +12,10 @@ import * as FaIcons from "react-icons/fa";
 import DocOrderPDF from "../DocOrderPDF";
 import { FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
-import "./styles.css";
 import { sendMailCollect, sendMailEnd } from "../../services/mailService";
 import { GiCancel } from "react-icons/gi";
+import { FiEdit2 } from "react-icons/fi";
+import "./styles.css";
 
 const styleStatus = {
   "Solicitado": "primary",
@@ -23,6 +24,25 @@ const styleStatus = {
   "Cancelado": "secondary",
   "Finalizado": "success",
   'Rechazado': "danger",
+};
+
+const handleDownload = async (row) => {
+  try {
+    // Generar PDF en el momento
+    const blob = await pdf(<DocOrderPDF order={row} />).toBlob();
+
+    // Crear enlace temporal
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(row.coId !== null || row.coId !== '') ? row?.coId : row?.clientId }-Devoluciones y averías.pdf`;
+    a.click();
+
+      // Liberar memoria
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar el PDF", error);
+  }
 };
 
 function TableOrders({ orders, getAllOrders, loading }) {
@@ -52,6 +72,33 @@ function TableOrders({ orders, getAllOrders, loading }) {
       cell: (row, index, column, id) =>
         isMobile ? (
           <div className="d-flex gap-2 p-1">
+            <button
+              className="btn btn-sm"
+              onClick={(e) => handleDownload(row)}
+              style={{
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <FaIcons.FaDownload />
+            </button>
+          </div>
+        ) : (
+          <div className="d-flex gap-2 p-1">
+            <button
+              title="Ver PDF de pedido"
+              className="btn btn-sm btn-primary"
+              onClick={(e) => {
+                setSelectedOrder(row);
+              }}
+            >
+              <FaIcons.FaEye />
+            </button>
+          </div>
+        ),
+      /* cell: (row, index, column, id) =>
+        isMobile ? (
+          <div className="d-flex gap-2 p-1">
             <PDFDownloadLink
               document={<DocOrderPDF order={row} />}
               fileName={`${(row?.coId !== null || row?.coId !== '') ? row?.coId : row?.clientId }-Devoluciones y averías.pdf`}
@@ -74,7 +121,7 @@ function TableOrders({ orders, getAllOrders, loading }) {
               <FaIcons.FaEye />
             </button>
           </div>
-        ),
+        ), */
       width: "50px",
     },
     {
@@ -84,16 +131,30 @@ function TableOrders({ orders, getAllOrders, loading }) {
       cell: (row, index, column, id) => (
         <div className='d-flex gap-2 p-1'>
           {((user.role === 'admin' || user.role === 'Autorizador clientes' || user.role === 'Autorizador agencias')) ? (
-            <button 
-              title="Editar registro" className='btn btn-sm'
-              style={{background:'#FF5757', color:'white'}}
-              onClick={(e) => {
-                /* setSelectedCredito(row) */
-                navigate(`/autorizacion/${row.id}`)
-              }}
-            >
-              <FaEdit />
-            </button>
+            <div className="d-flex flex-row gap-1">
+              <button 
+                title="Editar registro" className='btn btn-sm'
+                style={{background:'#FF5757', color:'white'}}
+                onClick={(e) => {
+                  /* setSelectedCredito(row) */
+                  navigate(`/autorizacion/${row.id}`)
+                }}
+              >
+                <FaEdit />
+              </button>
+              {(user.role === 'admin' && (row.state !== 'Recogido' && row.state !== 'Cancelado' && row.state !== 'Finalizado' )) &&
+                <button 
+                  title="Editar registro" className='btn btn-sm btn-primary'
+                  style={{color:'white'}}
+                  onClick={(e) => {
+                    /* setSelectedCredito(row) */
+                    navigate(`/edit/form/${row.id}`)
+                  }}
+                >
+                  <FiEdit2 />
+                </button>
+              }
+            </div>
           ):((user.role === 'logistica' && (row.state === 'Autorizado')) ?
             (
               <div className="d-flex flex-row gap-2">
@@ -116,13 +177,27 @@ function TableOrders({ orders, getAllOrders, loading }) {
                 </button>
               </div>
             ) : ((user.role === 'supervisor' && row.state === 'Recogido') &&
-              <button 
-                title="Finalizar" className='btn btn-sm btn-success'
-                /* style={{background:'#FF5757', color:'white'}} */
-                onClick={(e) => (setSelectedReturn(row), openModalFinish(e))}
-              >
-                <FaCheckCircle />
-              </button>
+              (
+                <button 
+                  title="Finalizar" className='btn btn-sm btn-success'
+                  /* style={{background:'#FF5757', color:'white'}} */
+                  onClick={(e) => (setSelectedReturn(row), openModalFinish(e))}
+                >
+                  <FaCheckCircle />
+                </button>
+              /*) : ((user.role === 'solicitante' && row.state === 'Solicitado') && 
+                (
+                  <button 
+                    title="Editar registro" className='btn btn-sm'
+                    style={{background:'#FF5757', color:'white'}}
+                    onClick={(e) => {
+                      navigate(`/edit/form/${row.id}`)
+                    }}
+                  >
+                    <FaEdit />
+                  </button>
+                ) */
+              )
             ))
           }
         </div>

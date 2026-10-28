@@ -667,7 +667,7 @@ export default function Form() {
                     playsInline
                     style={{ width: '100%', height: '100%', border: '2px solid #ccc', borderRadius: '10px' }}
                   />                
-                  <canvas ref={canvasRef} style={{ display: "none" }} />
+                  <canvas ref={canvasRef} className="scanner-canvas" style={{ display: "none" }} />
                 </div>
               ):( typeEvidence === 'Foto' &&
                 <img

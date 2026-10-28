@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from "./pages/Login"
 import Devoluciones from "./pages/Devoluciones"
 import Form from "./pages/Form";
+import EditForm from './pages/editForm';
 import Users from "./pages/Users"
 import ChangePassword from './pages/ChangePassword';
 import SendRecoveryPassword from "./pages/SendRecoveryPassword"
@@ -29,6 +30,7 @@ function App() {
               <Route path='/login' element={<Login />} />
               <Route path='/inicio' element={<PrivateRoute component={Devoluciones} />} />
               <Route path='/form' element={<PrivateRoute component={Form} />} />
+              <Route path='/edit/form/:id' element={<PrivateRoute component={EditForm} />} />
               <Route path='/autorizacion/:token' element={<PrivateRoute component={Autorizaciones} />} />
               <Route path='/usuarios' element={<PrivateRoute component={Users} />} />
               <Route path='/cambiar/contrasena' element={<PrivateRoute component={ChangePassword} />} />
